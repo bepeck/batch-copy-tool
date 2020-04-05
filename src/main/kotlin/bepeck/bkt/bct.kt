@@ -1,6 +1,6 @@
 package bepeck.bkt
 
-import bepeck.bkt.DirectoryContent.ResolvedFile
+import bepeck.bkt.FsItem.FileResolved
 import bepeck.bkt.Reading.Failed
 import bepeck.bkt.Reading.Partially
 import bepeck.bkt.Reading.Totally
@@ -27,11 +27,11 @@ fun main(args: Array<String>) {
 }
 
 private fun copy(dirSrc: Path, dirDst: Path) {
-    val content = collectDirectoryContent(dirSrc.toFile()).toList()
+    val content = FsItem.collectFsItems(dirSrc.toFile()).toList()
 
     printSrcCollectionResult(dirDst.resolve("src_file.txt"), content)
 
-    val resolvedFiles = content.filterIsInstance<ResolvedFile>()
+    val resolvedFiles = content.filterIsInstance<FileResolved>()
 
     val dirDstTmp = dirDst.resolve("${currentTimeMillis()}_${nanoTime()}_tmp")
 
@@ -166,7 +166,7 @@ private fun createParents(path: Path) {
     createDirectories(parent)
 }
 
-private fun printSrcCollectionResult(log: Path, srcContent: List<DirectoryContent>) {
+private fun printSrcCollectionResult(log: Path, srcContent: List<FsItem>) {
     newOutputStream(log).use { out ->
         val writer = PrintWriter(out)
         srcContent.forEach { directoryContent ->
