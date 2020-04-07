@@ -77,25 +77,33 @@ private fun copy(dirSrc: Path, dirDst: Path) {
         }
     }
 
-    toCopyFiles.forEach { toCopy ->
-        if (toCopy.toCopyDstFile.exists()) {
+    val toCopyNotExist = toCopyFiles.filterNot { toCopy ->
+        val exists = toCopy.toCopyDstFile.exists()
+        if (exists) {
             println("${toCopy.toCopyDstFile} - exists, skipped")
-        } else {
-            val prevState = if (toCopy.toCopyDstErrorFile.exists()) {
-                " (was failed)"
-            } else {
-                ""
-            }
-
-            println("${toCopy.toCopyDstFile} - try copy${prevState}")
-
-            createParents(toCopy.toCopyDst)
-            createParents(toCopy.toCopyDstError)
-            createParents(toCopy.toCopyDstTmp)
-            deleteIfExists(toCopy.toCopyDstTmp)
-
-            tryCopy(toCopy)
         }
+        exists
+    }
+
+    val toCopyCount = toCopyNotExist.size
+
+    toCopyNotExist.forEachIndexed { num, toCopy ->
+        val prevState = if (toCopy.toCopyDstErrorFile.exists()) {
+            " (was failed)"
+        } else {
+            ""
+        } + " ($num of $toCopyCount)"
+
+        println("${toCopy.toCopyDstFile} - try copy${prevState}")
+
+        createParents(toCopy.toCopyDst)
+        createParents(toCopy.toCopyDstError)
+        createParents(toCopy.toCopyDstTmp)
+        deleteIfExists(toCopy.toCopyDstTmp)
+
+        tryCopy(toCopy)
+
+        toCopyCount.dec()
     }
 }
 
