@@ -92,7 +92,7 @@ private fun copy(dirSrc: Path, dirDst: Path) {
             " (was failed)"
         } else {
             ""
-        } + " ($num of $toCopyCount)"
+        } + " (${num + 1} of $toCopyCount)"
 
         println("${toCopy.toCopyDstFile} - try copy${prevState}")
 
